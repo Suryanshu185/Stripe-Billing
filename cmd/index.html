@@ -1,34 +1,105 @@
-<!-- cmd/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>Stripe Billing Demo</title>
+  <style>
+    body {
+      background: #f5f7fa;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      color: #32325d;
+      margin-bottom: 30px;
+    }
+
+    .button-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 30px;
+      width: 100%;
+      max-width: 600px;
+    }
+
+    button {
+      background: #635bff;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 6px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background 0.2s ease-in-out;
+    }
+
+    button:hover {
+      background: #5a52e6;
+    }
+
+    pre {
+      background: #1e1e1e;
+      color: #dcdcdc;
+      padding: 20px;
+      border-radius: 8px;
+      width: 100%;
+      max-width: 800px;
+      overflow-x: auto;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .footer {
+      margin-top: 40px;
+      color: #888;
+      font-size: 13px;
+    }
+  </style>
 </head>
 <body>
-  <h1>Stripe Billing API Demo</h1>
 
-  <button onclick="hit('/health-check')">Health Check</button>
-  <button onclick="hit('/account')">Get Account</button>
-  <button onclick="hit('/active-resources')">Get Resources</button>
-  <button onclick="hitPost('/account')">Create Account</button>
-  <button onclick="hitPost('/active-resources')">Add Resource</button>
-  <button onclick="hitPost('/demo-payment')">Create Payment Intent</button>
+  <h1>⚡ Stripe Billing API Demo</h1>
 
-  <pre id="output"></pre>
+  <div class="button-grid">
+    <button onclick="hit('/health-check')">Health Check</button>
+    <button onclick="hit('/account')">Get Account</button>
+    <button onclick="hit('/active-resources')">Get Resources</button>
+    <button onclick="hitPost('/account')">Create Account</button>
+    <button onclick="hitPost('/active-resources')">Add Resource</button>
+    <button onclick="hitPost('/demo-payment')">Create Payment</button>
+  </div>
+
+  <pre id="output">// JSON response will appear here</pre>
+
+  <div class="footer">Mock Stripe Demo — powered by Go + Gin</div>
 
   <script>
     async function hit(url) {
-      const res = await fetch(url);
-      const data = await res.json();
-      document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+      document.getElementById("output").textContent = "// loading...";
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+      } catch (e) {
+        document.getElementById("output").textContent = "Error: " + e.message;
+      }
     }
 
     async function hitPost(url) {
-      const res = await fetch(url, { method: 'POST' });
-      const data = await res.json();
-      document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+      document.getElementById("output").textContent = "// loading...";
+      try {
+        const res = await fetch(url, { method: 'POST' });
+        const data = await res.json();
+        document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+      } catch (e) {
+        document.getElementById("output").textContent = "Error: " + e.message;
+      }
     }
   </script>
+
 </body>
 </html>
