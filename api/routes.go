@@ -49,6 +49,8 @@ import (
 func newRouter() *gin.Engine {
 	r := gin.Default()
 
+	r.StaticFile("/", "./cmd/index.html")
+
 	// Health check
 	r.GET("/health-check", func(c *gin.Context) {
 		c.JSON(200, gin.H{"message": "OK"})

@@ -1,0 +1,34 @@
+<!-- cmd/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Stripe Billing Demo</title>
+</head>
+<body>
+  <h1>Stripe Billing API Demo</h1>
+
+  <button onclick="hit('/health-check')">Health Check</button>
+  <button onclick="hit('/account')">Get Account</button>
+  <button onclick="hit('/active-resources')">Get Resources</button>
+  <button onclick="hitPost('/account')">Create Account</button>
+  <button onclick="hitPost('/active-resources')">Add Resource</button>
+  <button onclick="hitPost('/demo-payment')">Create Payment Intent</button>
+
+  <pre id="output"></pre>
+
+  <script>
+    async function hit(url) {
+      const res = await fetch(url);
+      const data = await res.json();
+      document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+    }
+
+    async function hitPost(url) {
+      const res = await fetch(url, { method: 'POST' });
+      const data = await res.json();
+      document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+    }
+  </script>
+</body>
+</html>
