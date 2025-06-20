@@ -40,10 +40,10 @@
 package api
 
 import (
+	"time"
+
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
-	"github.com/stripe/stripe-go/v78"
-	"github.com/stripe/stripe-go/v78/paymentintent"
+	"github.com/google/uuid"
 )
 
 func newRouter() *gin.Engine {
@@ -67,22 +67,20 @@ func newRouter() *gin.Engine {
 }
 
 func demoPaymentIntent(c *gin.Context) {
-	stripe.Key = viper.GetString("STRIPE_SECRET_KEY")
-	if stripe.Key == "" {
-		c.JSON(500, gin.H{"error": "STRIPE_SECRET_KEY not set"})
-		return
+	clientSecret := "pi_" + uuid.NewString() + "_secret_" + uuid.NewString()
+
+	response := gin.H{
+		"id":            "pi_" + uuid.NewString(),
+		"object":        "payment_intent",
+		"amount":        1000,
+		"currency":      "usd",
+		"status":        "requires_payment_method",
+		"client_secret": clientSecret,
+		"created":       time.Now().Unix(),
+		"livemode":      false,
 	}
 
-	params := &stripe.PaymentIntentParams{
-		Amount:   stripe.Int64(1000),
-		Currency: stripe.String(string(stripe.CurrencyUSD)),
-	}
-	pi, err := paymentintent.New(params)
-	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
-		return
-	}
-	c.JSON(200, gin.H{"client_secret": pi.ClientSecret})
+	c.JSON(200, response)
 }
 
 func registerMockAccountRoutes(r *gin.Engine) {
