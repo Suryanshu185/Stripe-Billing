@@ -182,6 +182,11 @@ github.com/spf13/viper/internal/encoding/json
 github.com/spf13/viper/internal/encoding/toml
 github.com/spf13/viper/internal/encoding/yaml
 github.com/spf13/viper/internal/features
+# github.com/stripe/stripe-go/v78 v78.12.0
+## explicit; go 1.13
+github.com/stripe/stripe-go/v78
+github.com/stripe/stripe-go/v78/form
+github.com/stripe/stripe-go/v78/paymentintent
 # github.com/subosito/gotenv v1.6.0
 ## explicit; go 1.18
 github.com/subosito/gotenv
