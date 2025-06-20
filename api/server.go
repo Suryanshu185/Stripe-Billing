@@ -3,6 +3,7 @@ package api
 import (
 	"os"
 
+	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 )
 
@@ -24,6 +25,12 @@ func NewServer() *Server {
 }
 
 func (s *Server) Start() error {
-	r := newRouter()
+	r := gin.Default()
+
+	// Add a basic health check route
+	r.GET("/healthz", func(c *gin.Context) {
+		c.JSON(200, gin.H{"status": "ok"})
+	})
+
 	return r.Run(s.listenAddr)
 }
