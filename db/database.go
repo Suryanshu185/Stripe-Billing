@@ -6,8 +6,9 @@ import (
 	"os"
 
 	"github.com/spf13/viper"
-	dbModels "gitlab.com/amcop-saas-platform/vcs/vcs/billing-microservice/db/models"
 	"go.uber.org/zap"
+
+	dbModels "gitlab.com/amcop-saas-platform/vcs/vcs/billing-microservice/db/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -16,38 +17,24 @@ var DB *gorm.DB
 
 func InitDB() {
 	logger := viper.Get("Logger").(*zap.Logger)
-	logger.Debug("Initializing database...")
-
-	// Railway sets this automatically
-	dsn := os.Getenv("DATABASE_URL")
-	if dsn == "" {
-		// Manual fallback (optional for local dev)
-		dbHost := os.Getenv("PGHOST")
-		dbPort := os.Getenv("PGPORT")
-		dbName := os.Getenv("PGDATABASE")
-		dbUser := os.Getenv("PGUSER")
-		dbPassword := os.Getenv("PGPASSWORD")
-
-		if dbHost == "" || dbPort == "" || dbName == "" || dbUser == "" || dbPassword == "" {
-			log.Fatal("Database connection details missing in environment variables")
-		}
-
-		dsn = fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=require",
-			dbHost, dbUser, dbPassword, dbName, dbPort)
+	logger.Debug("connecting to database")
+	dbHost, dbPort, dbName, dbUserName, dbPassword := viper.GetString("DB_HOST"), viper.GetString("DB_PORT"), viper.GetString("DB_NAME"),
+		viper.GetString("DB_POSTGRES_USERNAME"), viper.GetString("DB_POSTGRES_PASSWORD")
+	err := createDatabaseIfNotExists(dbHost, dbPort, dbName, dbUserName, dbPassword)
+	if err != nil {
+		log.Fatalf("error creating db: %v", err)
 	}
 
-	logger.Info("Connecting to database...", zap.String("dsn", dsn))
-
-	var err error
+	dsn := fmt.Sprintf("host=%s dbname=%s port=%s", dbHost, dbName, dbPort)
+	if len(dbUserName) > 0 && len(dbPassword) > 0 {
+		dsn = dsn + fmt.Sprintf(" user=%s password=%s", dbUserName, dbPassword)
+	}
 	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		logger.Error("Failed to connect to database", zap.Error(err))
+		logger.Error("error connecting to database", zap.Error(err))
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
-
-	logger.Info("Connected to DB. Running migrations...")
 	runMigrations()
-	logger.Info("Migrations done.")
 }
 
 func runMigrations() {
